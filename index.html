@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PMDraft — Write better products, faster.</title>
+  <meta name="description" content="One PM skill. Every Tuesday. In 3 minutes. Claude Code skills for Product Managers who'd rather be thinking than typing.">
+  <meta property="og:title" content="PMDraft — Write better products, faster.">
+  <meta property="og:description" content="One PM skill. Every Tuesday. In 3 minutes.">
+  <meta property="og:url" content="https://pmdraft.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── Variables ── */
+    :root {
+      --bg:         #0a0a0f;
+      --bg-card:    #111118;
+      --bg-hover:   #16161f;
+      --border:     #1e1e2e;
+      --border-lit: #2a2a3e;
+      --teal:       #00d4aa;
+      --teal-dim:   #00a884;
+      --white:      #f0f0f5;
+      --muted:      #6b6b8a;
+      --muted-lit:  #9090aa;
+      --mono:       'JetBrains Mono', monospace;
+      --sans:       'DM Sans', sans-serif;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,15,0.92);
+      backdrop-filter: blur(12px);
+    }
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .nav-logo {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+      color: var(--white);
+    }
+    .nav-logo span { color: var(--teal); }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .nav-links a:hover { color: var(--white); transition: color 0.15s; }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      padding: 96px 0 80px;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: -120px;
+      right: -160px;
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle, rgba(0,212,170,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--teal);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .hero-eyebrow::before { content: '> '; }
+    h1 {
+      font-family: var(--mono);
+      font-size: clamp(28px, 5vw, 46px);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+      color: var(--white);
+    }
+    h1 em {
+      font-style: normal;
+      color: var(--teal);
+    }
+    .hero-sub {
+      font-size: 17px;
+      color: var(--muted-lit);
+      max-width: 480px;
+      margin-bottom: 40px;
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    /* ── Form ── */
+    .form-wrap {
+      display: flex;
+      gap: 10px;
+      max-width: 440px;
+      margin-bottom: 16px;
+    }
+    .form-wrap input[type="email"] {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-lit);
+      color: var(--white);
+      font-family: var(--mono);
+      font-size: 13px;
+      padding: 12px 16px;
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-wrap input[type="email"]::placeholder { color: var(--muted); }
+    .form-wrap input[type="email"]:focus { border-color: var(--teal); }
+    .btn-primary {
+      background: var(--teal);
+      color: #0a0a0f;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .btn-primary:hover { background: var(--teal-dim); }
+    .form-note {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+    .form-success {
+      display: none;
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--teal);
+      padding: 12px 0;
+    }
+    .form-success::before { content: '✓ '; }
+
+    /* ── Section base ── */
+    section { position: relative; z-index: 1; }
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--teal);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section-label::before { content: '// '; }
+    h2 {
+      font-family: var(--mono);
+      font-size: clamp(20px, 3vw, 26px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .section-sub {
+      color: var(--muted-lit);
+      font-size: 15px;
+      margin-bottom: 40px;
+      max-width: 520px;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 72px 0;
+    }
+
+    /* ── What you get ── */
+    .what-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .what-item {
+      background: var(--bg-card);
+      padding: 28px 24px;
+    }
+    .what-icon {
+      font-size: 22px;
+      margin-bottom: 14px;
+    }
+    .what-item h3 {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+    .what-item p {
+      font-size: 13px;
+      color: var(--muted-lit);
+      line-height: 1.6;
+    }
+
+    /* ── Skills ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .skill-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .skill-card:hover {
+      border-color: var(--border-lit);
+      background: var(--bg-hover);
+    }
+    .skill-emoji { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+    .skill-info { flex: 1; min-width: 0; }
+    .skill-name {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+    .skill-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    .skill-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .skill-price {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--teal);
+      font-weight: 700;
+    }
+    .skill-link {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      border: 1px solid var(--border-lit);
+      padding: 4px 10px;
+      border-radius: 4px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .skill-link:hover { color: var(--teal); border-color: var(--teal); }
+
+    /* ── Bundle ── */
+    .bundle-card {
+      background: var(--bg-card);
+      border: 1px solid var(--teal);
+      border-radius: 10px;
+      padding: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin-top: 12px;
+    }
+    .bundle-left h3 {
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .bundle-left p {
+      font-size: 13px;
+      color: var(--muted-lit);
+    }
+    .bundle-left .bundle-savings {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--teal);
+      margin-top: 6px;
+    }
+    .bundle-right { flex-shrink: 0; text-align: right; }
+    .bundle-price {
+      font-family: var(--mono);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--teal);
+    }
+    .bundle-was {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: line-through;
+      margin-bottom: 10px;
+    }
+    .btn-bundle {
+      display: inline-block;
+      background: var(--teal);
+      color: #0a0a0f;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .btn-bundle:hover { background: var(--teal-dim); }
+
+    /* ── Free skill ── */
+    .free-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .free-card h3 {
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .free-card p { font-size: 13px; color: var(--muted-lit); }
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border-lit);
+      color: var(--white);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: 6px;
+      white-space: nowrap;
+      transition: border-color 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+    .btn-outline:hover { border-color: var(--teal); color: var(--teal); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      margin-top: 80px;
+    }
+    footer .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-brand {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .footer-brand strong { color: var(--white); }
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .footer-links a:hover { color: var(--teal); transition: color 0.15s; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .what-grid { grid-template-columns: 1fr; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .bundle-card { flex-direction: column; align-items: flex-start; }
+      .bundle-right { text-align: left; }
+      .free-card { flex-direction: column; align-items: flex-start; }
+      .form-wrap { flex-direction: column; }
+      .form-wrap input[type="email"],
+      .btn-primary { width: 100%; }
+      .nav-links { display: none; }
+      footer .container { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <div class="container">
+      <span class="nav-logo">[<span>PM</span>]Draft</span>
+      <div class="nav-links">
+        <a href="#newsletter">Newsletter</a>
+        <a href="#skills">Skills</a>
+        <a href="https://github.com/indytheagent/pmdraft-skills" target="_blank">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <p class="hero-eyebrow">PM Draft Weekly</p>
+      <h1>One PM skill.<br>Every Tuesday.<br><em>In 3 minutes.</em></h1>
+      <p class="hero-sub">
+        A weekly newsletter for Product Managers who want practical frameworks, not theory.
+        One insight. Two curated links. Zero fluff.
+      </p>
+
+      <form class="form-wrap" id="newsletter-form">
+        <input type="email" id="email-input" placeholder="your@email.com" required>
+        <button type="submit" class="btn-primary">Subscribe →</button>
+      </form>
+      <div class="form-success" id="form-success">You're in. See you Tuesday.</div>
+      <p class="form-note">Free. No spam. Unsubscribe anytime.</p>
+    </div>
+  </section>
+
+  <!-- What you get -->
+  <section id="newsletter">
+    <div class="container">
+      <p class="section-label">Every issue</p>
+      <h2>What's inside</h2>
+      <p class="section-sub">Short enough to read while your standup loads. Useful enough to save.</p>
+
+      <div class="what-grid">
+        <div class="what-item">
+          <div class="what-icon">🧠</div>
+          <h3>1 PM framework</h3>
+          <p>A practical technique you can apply to your next sprint, meeting, or backlog session.</p>
+        </div>
+        <div class="what-item">
+          <div class="what-icon">🔗</div>
+          <h3>2 curated links</h3>
+          <p>The best PM content of the week — with one line on why it's worth your time.</p>
+        </div>
+        <div class="what-item">
+          <div class="what-icon">🛠️</div>
+          <h3>1 Claude Code tip</h3>
+          <p>How to apply the week's skill directly in Claude Code. Show, don't tell.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- Skills -->
+  <section id="skills">
+    <div class="container">
+      <p class="section-label">Claude Code skills</p>
+      <h2>Stop starting from scratch.</h2>
+      <p class="section-sub">
+        Drop a skill into your Claude Code project. Write better PM docs in seconds.
+      </p>
+
+      <div class="skills-grid">
+
+        <a class="skill-card" href="https://indytheagent.gumroad.com" target="_blank">
+          <div class="skill-emoji">📖</div>
+          <div class="skill-info">
+            <div class="skill-name">User Story Writer Pro</div>
+            <div class="skill-desc">Full Gherkin criteria, story splitting, Jira-ready output.</div>
+            <div class="skill-footer">
+              <span class="skill-price">$7</span>
+              <span class="skill-link">Get it →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="skill-card" href="https://indytheagent.gumroad.com" target="_blank">
+          <div class="skill-emoji">📊</div>
+          <div class="skill-info">
+            <div class="skill-name">Backlog Prioritizer</div>
+            <div class="skill-desc">RICE, MoSCoW, or Kano — selected for your context.</div>
+            <div class="skill-footer">
+              <span class="skill-price">$7</span>
+              <span class="skill-link">Get it →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="skill-card" href="https://indytheagent.gumroad.com" target="_blank">
+          <div class="skill-emoji">💡</div>
+          <div class="skill-info">
+            <div class="skill-name">Feature Intake & Triage</div>
+            <div class="skill-desc">Build / Investigate / Defer / Decline — with rationale.</div>
+            <div class="skill-footer">
+              <span class="skill-price">$5</span>
+              <span class="skill-link">Get it →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="skill-card" href="https://indytheagent.gumroad.com" target="_blank">
+          <div class="skill-emoji">🗺️</div>
+          <div class="skill-info">
+            <div class="skill-name">Outcome Roadmap Planner</div>
+            <div class="skill-desc">Now / Next / Later anchored to your OKRs.</div>
+            <div class="skill-footer">
+              <span class="skill-price">$7</span>
+              <span class="skill-link">Get it →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="skill-card" href="https://indytheagent.gumroad.com" target="_blank">
+          <div class="skill-emoji">📢</div>
+          <div class="skill-info">
+            <div class="skill-name">Stakeholder Update Generator</div>
+            <div class="skill-desc">Team, management, executive, external — one input.</div>
+            <div class="skill-footer">
+              <span class="skill-price">$5</span>
+              <span class="skill-link">Get it →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="skill-card" href="https://indytheagent.gumroad.com" target="_blank">
+          <div class="skill-emoji">📄</div>
+          <div class="skill-info">
+            <div class="skill-name">PRD Writer</div>
+            <div class="skill-desc">10-section PRD with anti-goals, metrics, and open questions.</div>
+            <div class="skill-footer">
+              <span class="skill-price">$9</span>
+              <span class="skill-link">Get it →</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+
+      <!-- Bundle -->
+      <div class="bundle-card">
+        <div class="bundle-left">
+          <h3>PM Kit — All 6 skills</h3>
+          <p>Everything you need to write faster, prioritize smarter, and ship better.</p>
+          <p class="bundle-savings">Save $16 vs buying separately</p>
+        </div>
+        <div class="bundle-right">
+          <div class="bundle-was">$40</div>
+          <div class="bundle-price">$24</div>
+          <a href="https://indytheagent.gumroad.com" target="_blank" class="btn-bundle">Get the bundle →</a>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Free skill -->
+      <div class="free-card">
+        <div>
+          <h3>Start for free</h3>
+          <p>User Story Writer — the base skill. Free, open source, install in 2 minutes.</p>
+        </div>
+        <a href="https://github.com/indytheagent/pmdraft-skills" target="_blank" class="btn-outline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          View on GitHub →
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-brand">
+        <strong>[PM]Draft</strong> — Write better products, faster.<br>
+        <span>Made by Indy · <a href="mailto:info@pmdraft.com">info@pmdraft.com</a></span>
+      </div>
+      <div class="footer-links">
+        <a href="https://twitter.com/pmdraft" target="_blank">Twitter</a>
+        <a href="https://reddit.com/u/pmdraft" target="_blank">Reddit</a>
+        <a href="https://medium.com/@pmdraft" target="_blank">Medium</a>
+        <a href="https://github.com/indytheagent/pmdraft-skills" target="_blank">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('newsletter-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('email-input').value;
+      const btn = this.querySelector('button');
+      btn.textContent = '...';
+      btn.disabled = true;
+      try {
+        const res = await fetch('https://pmdraft.com/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, list_ids: [1] })
+        });
+        if (res.ok) {
+          document.getElementById('newsletter-form').style.display = 'none';
+          document.getElementById('form-success').style.display = 'block';
+        } else {
+          btn.textContent = 'Subscribe →';
+          btn.disabled = false;
+        }
+      } catch {
+        btn.textContent = 'Subscribe →';
+        btn.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>
