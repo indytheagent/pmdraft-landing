@@ -636,31 +636,36 @@
   </footer>
 
   <script>
-    document.getElementById('newsletter-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const email = document.getElementById('email-input').value;
-      const btn = this.querySelector('button');
-      btn.textContent = '...';
-      btn.disabled = true;
-      try {
-        const res = await fetch('https://pmdraft.com/subscribe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, list_ids: [1] })
-        });
-        if (res.ok) {
-          document.getElementById('newsletter-form').style.display = 'none';
-          document.getElementById('form-success').style.display = 'block';
-        } else {
-          btn.textContent = 'Subscribe →';
-          btn.disabled = false;
-        }
-      } catch {
+  document.getElementById('newsletter-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('email-input').value;
+    const btn = this.querySelector('button');
+    btn.textContent = '...';
+    btn.disabled = true;
+    try {
+      const res = await fetch('https://list.pmdraft.com/api/public/subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email,
+          list_uuids: ['34c3d6b5-3263-4689-93ea-964f29e691c2']
+        })
+      });
+      if (res.ok || res.status === 200 || res.status === 201) {
+        document.getElementById('newsletter-form').style.display = 'none';
+        document.getElementById('form-success').style.display = 'block';
+      } else {
         btn.textContent = 'Subscribe →';
         btn.disabled = false;
+        console.error('Subscription failed:', res.status);
       }
-    });
-  </script>
+    } catch(err) {
+      btn.textContent = 'Subscribe →';
+      btn.disabled = false;
+      console.error('Subscription error:', err);
+    }
+  });
+</script>
 
 </body>
 </html>
